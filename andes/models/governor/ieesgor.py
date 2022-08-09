@@ -69,12 +69,12 @@ class IEESGORModel(TGBase):
                       )
 
 
-        self.pout.e_str = 'ue * (F3_y) - pout'
+        self.pout.e_str = 'ue * F3_y - pout'
 
 
 class IEESGOR(IEESGORData, IEESGORModel):
     """
-    IEEE Standard Governor (IEESGOR).
+    IEEE Standard Governor (IEESGOR) Reduced Model.
     """
 
     def __init__(self, system, config):
