@@ -48,7 +48,7 @@ class IEESGORMModel(TGBase):
     def __init__(self, system, config):
         TGBase.__init__(self, system, config)
 
-        self.F1 = Lag(u='ue * (omega - (wref + uomega0)',
+        self.F1 = Lag(u='ue * (omega - wref - uomega0)',
                       T=self.T1,
                       K=self.K1,
                       )
