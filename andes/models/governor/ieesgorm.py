@@ -2,9 +2,9 @@ from andes.core import Lag, LeadLag, NumParam
 from andes.core.block import GainLimiter
 from andes.models.governor.tgbase import TGBase, TGBaseData
 
-# Reduced IEESGO Governor model
+# Reduced IEESGO Governor model, modified with control signal
 # K2 = K3 = 0
-class IEESGORData(TGBaseData):
+class IEESGORMData(TGBaseData):
     def __init__(self):
         TGBaseData.__init__(self)
         self.T1 = NumParam(info='Controller lag',
@@ -44,7 +44,7 @@ class IEESGORData(TGBaseData):
                              )
 
 
-class IEESGORModel(TGBase):
+class IEESGORMModel(TGBase):
     def __init__(self, system, config):
         TGBase.__init__(self, system, config)
 
@@ -72,11 +72,11 @@ class IEESGORModel(TGBase):
         self.pout.e_str = 'ue * F3_y - pout'
 
 
-class IEESGOR(IEESGORData, IEESGORModel):
+class IEESGORM(IEESGORMData, IEESGORMModel):
     """
-    IEEE Standard Governor (IEESGOR) Reduced Model.
+    IEEE Standard Governor (IEESGORM) Reduced Model, Modified with coordinating signal
     """
 
     def __init__(self, system, config):
-        IEESGORData.__init__(self)
-        IEESGORModel.__init__(self, system, config)
+        IEESGORMData.__init__(self)
+        IEESGORMModel.__init__(self, system, config)
