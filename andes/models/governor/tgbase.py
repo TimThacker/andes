@@ -110,6 +110,12 @@ class TGBase(Model):
         self.paux0 = ConstService(v_str='0',
                                   tex_name='P_{aux0}',
                                   info='const. auxiliary input')
+                                  
+        # Note: uomega0 is the the proposed coordinating signal
+        # The goal is to be able to change uomega0 in the dynamic simulation
+        self.uomega0 = ConstService(v_str='0',
+                                    tex_name='u_{omega0}',
+                                    info='coordinating signal for SGs and DERs')
 
         self.tm = ExtAlgeb(src='tm',
                            model='SynGen',
@@ -126,6 +132,11 @@ class TGBase(Model):
                           v_str='paux0',
                           e_str='paux0 - paux',
                           )
+        self.uomega = Algeb(info='coordinating signal for SGs and DERs',
+                            tex_name='u_{omega}',
+                            v_str='uomega0',
+                            e_str='uomega0 - uomega',
+                            )
         self.pout = Algeb(info='Turbine final output power',
                           tex_name='P_{out}',
                           v_str='ue * tm0',
