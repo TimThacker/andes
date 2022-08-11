@@ -38,7 +38,7 @@ def pert(t, system):
 
     """
 
-    if t > 0.5 and t <= 3:
+    if t > 00 and t <= 2:
         system.IEESGORM.alter('uomega0', 'IEESGORM_1', .5)
-    if t > 6:
+    if t > 2:
         system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0)
