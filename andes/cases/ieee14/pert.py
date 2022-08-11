@@ -38,4 +38,7 @@ def pert(t, system):
 
     """
 
-    pass
+    if t > 0:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 1)
+    if t > 2:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0)
