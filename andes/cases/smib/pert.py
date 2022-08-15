@@ -39,3 +39,4 @@ def pert(t, system):
         system.PQ.config.q2i = 0 
         system.PQ.config.q2z = 1
         system.PQ.alter('Req', 'PQ_1', 1.1)
+        system.PQ.alter('Xeq', 'PQ_1', 0)
