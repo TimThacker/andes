@@ -30,5 +30,5 @@ def pert(t, system):
         System object supplied by the simulator.
     """
 
-    if t > 1:
-        system.PQ.alter('Ppf', 'PQ_1', 0.95)
+    if t > 2:
+        system.PQ.alter('Req', 'PQ_1', 0.9)
