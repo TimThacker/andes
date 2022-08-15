@@ -31,4 +31,11 @@ def pert(t, system):
     """
 
     if t > 2:
+        system.TDS.custom_event = True
+        system.PQ.config.p2p = 0 
+        system.PQ.config.p2i = 0 
+        system.PQ.config.p2z = 1
+        system.PQ.config.q2q = 0 
+        system.PQ.config.q2i = 0 
+        system.PQ.config.q2z = 1
         system.PQ.alter('Req', 'PQ_1', 1.1)
