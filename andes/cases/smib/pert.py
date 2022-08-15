@@ -31,5 +31,4 @@ def pert(t, system):
     """
 
     if t > 0:
-        system.TDS.custom_event = True
-        system.PQ.alter('Req', 'PQ_1', 0.95)
+        system.PQ.alter('Ppf', 'PQ_1', 0.95)
