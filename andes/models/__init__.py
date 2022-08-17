@@ -21,7 +21,7 @@ file_classes = list([
     ('line', ['Line', 'Jumper']),
     ('area', ['Area', 'ACE', 'ACEc']),
     ('dynload', ['ZIP', 'FLoad']),
-    ('synchronous', ['GENCLS', 'GENROU', 'PLBVFU1']),
+    ('synchronous', ['GENCLS', 'GENROU', 'GENROUF1', 'PLBVFU1']),
     ('governor', ['TG2', 'TGOV1', 'TGOV1DB', 'TGOV1N', 'TGOV1NDB',
                   'IEEEG1', 'IEESGO', 'IEESGOR', 'IEESGORM', 'GAST', 'HYGOV', 'HYGOVDB']),
     ('vcomp', ['IEEEVC']),
