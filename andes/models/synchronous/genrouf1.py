@@ -12,7 +12,7 @@ from andes.models.synchronous.genbase import GENBaseData, GENBase, Flux1
 logger = logging.getLogger(__name__)
 
 
-class GENROUData(GENBaseData):
+class GENROUF1Data(GENBaseData):
     """
     GENROU data.
     """
@@ -44,7 +44,7 @@ class GENROUData(GENBaseData):
                              tex_name=r"T''_{q0}")
 
 
-class GENROUModel:
+class GENROUF1Model:
     def __init__(self):
         # parameter checking for `xl`
         self._xlc = InitChecker(u=self.xl,
@@ -220,7 +220,7 @@ class GENROUModel:
         self.Id.e_str += '+ xd2*Id - psi2d'
 
 
-class GENROU(GENROUData, GENBase, GENROUModel, Flux1):
+class GENROUF1(GENROUF1Data, GENBase, GENROUF1Model, Flux1):
     """
     Round rotor generator with quadratic saturation.
 
@@ -233,7 +233,7 @@ class GENROU(GENROUData, GENBase, GENROUModel, Flux1):
     """
 
     def __init__(self, system, config):
-        GENROUData.__init__(self)
+        GENROUF1Data.__init__(self)
         GENBase.__init__(self, system, config)
         Flux1.__init__(self)
-        GENROUModel.__init__(self)
+        GENROUF1Model.__init__(self)
