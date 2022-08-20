@@ -30,10 +30,6 @@ def pert(t, system):
         System object supplied by the simulator.
     """
 
-
-    if t > 0:
-        system.PQ.alter('Req', 'PQ_1', 1.05)
-
         
     if t == 0:
         system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.005999)
