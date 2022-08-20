@@ -54,7 +54,48 @@ def pert(t, system):
 
     if t > 0:
         system.PQ.alter('Req', 'PQ_1', 1.05)
+
         
-    if t <= 2:
-        x=t*10
-        system.IEESGORM.alter('uomega0', 'IEESGORM_1', coordination(x)
+    if t = 0:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.5999)
+    if t = 0.1:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.5332)
+    if t = 0.2:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.5084)
+    if t = 0.3:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.4998)       
+    if t = 0.4:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.462541521)
+    if t = 0.5:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.429121226)       
+    if t = 0.6:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.340299815)        
+    if t = 0.7:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.282600701)        
+    if t = 0.8:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.276334584)        
+    if t = 0.9:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.289933205)       
+    if t = 1.0:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.269690573)       
+    if t = 1.1:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.287803233)
+    if t = 1.2:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.295975417)
+    if t = 1.3:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.302936882)
+    if t = 1.4:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.278517008)       
+    if t = 1.5:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.290291786)
+    if t = 1.6:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.228976682)       
+    if t = 1.7:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.274061799)        
+    if t = 1.8:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.288022757)        
+    if t = 1.9:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.285998553)        
+    if t = 2.0:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.315802068)       
+   
