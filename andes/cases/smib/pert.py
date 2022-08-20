@@ -31,4 +31,4 @@ def pert(t, system):
     """
 
     if t > 0:
-        system.PQ.set('Req', 'PQ_1', 'v', 1.05)
+        system.PQ.alter('Req', 'PQ_1', 1.05)
