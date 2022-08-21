@@ -72,5 +72,7 @@ def pert(t, system):
     if t == 1.9:
         system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.00285998553)        
     if t == 2.0:
-        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.00315802068)       
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0.00315802068)   
+    if t > 2.0:
+        system.IEESGORM.alter('uomega0', 'IEESGORM_1', 0)
    
