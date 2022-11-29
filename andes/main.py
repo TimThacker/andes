@@ -33,7 +33,7 @@ from ._version import get_versions
 import andes
 from andes.routines import routine_cli
 from andes.shared import Pool, Process, coloredlogs, unittest, NCPUS_PHYSICAL
-from andes.system import System
+from andes.system import System, import_pycode, fix_view_arrays
 from andes.utils.misc import elapsed, is_interactive
 from andes.utils.paths import get_config_path, get_log_dir, tests_root
 
@@ -553,7 +553,7 @@ def _run_mp_pool(cases, ncpu=NCPUS_PHYSICAL, verbose=logging.INFO, **kwargs):
 
     # fix address for in-place arrays
     for ss in ret:
-        ss.fix_address()
+        fix_view_arrays(ss)
 
     return ret
 
@@ -614,13 +614,14 @@ def run(filename, input_path='', verbose=20, mp_verbose=30, ncpu=NCPUS_PHYSICAL,
     if len(cases) == 1:
         system = run_case(cases[0], codegen=codegen, **kwargs)
     elif len(cases) > 1:
+        # import `pycode` to local namespace to avoid a picking issue
+        import_pycode()
 
         # suppress logging output during multiprocessing
         logger.info('-> Processing %s jobs on %s CPUs.', len(cases), ncpu)
         set_logger_level(logger, logging.StreamHandler, mp_verbose)
         set_logger_level(logger, logging.FileHandler, logging.DEBUG)
 
-        kwargs['no_pbar'] = True
         if pool is True:
             system = _run_mp_pool(cases,
                                   ncpu=ncpu,
@@ -784,7 +785,7 @@ def prepare(quick=False, incremental=False, models=None,
         return system
 
 
-def selftest(quick=False, **kwargs):
+def selftest(quick=False, extra=False, **kwargs):
     """
     Run unit tests.
     """
@@ -795,6 +796,9 @@ def selftest(quick=False, **kwargs):
 
     # skip if quick
     quick_skips = ('test_1_docs', 'test_codegen_inc')
+
+    # extra test naming convention
+    extra_test = 'extra_test'
 
     try:
         logger.handlers[0].setLevel(logging.WARNING)
@@ -807,16 +811,22 @@ def selftest(quick=False, **kwargs):
     suite = unittest.TestLoader().discover(test_directory)
 
     # remove codegen for quick mode
-    if quick is True:
-        for test_group in suite._tests:
-            for test_class in test_group._tests:
-                tests_keep = list()
+    for test_group in suite._tests:
+        for test_class in test_group._tests:
+            tests_keep = list()
 
-                for t in test_class._tests:
-                    if t._testMethodName not in quick_skips:
-                        tests_keep.append(t)
+            for t in test_class._tests:
+                # skip the extra tests if `extra` is not True
+                if (extra is not True) and (extra_test in t._testMethodName):
+                    continue
 
-                test_class._tests = tests_keep
+                # skip the ones for `quick`
+                if quick is True and (t._testMethodName in quick_skips):
+                    continue
+
+                tests_keep.append(t)
+
+            test_class._tests = tests_keep
 
     unittest.TextTestRunner(verbosity=verbose).run(suite)
     sys.stdout = sys.__stdout__
@@ -856,8 +866,8 @@ def versioninfo():
     import sympy
     import scipy
     import pandas
-    import numba
     import kvxopt
+
     versions = {'Python': platform.python_version(),
                 'andes': get_versions()['version'],
                 'numpy': np.__version__,
@@ -865,9 +875,16 @@ def versioninfo():
                 'sympy': sympy.__version__,
                 'scipy': scipy.__version__,
                 'pandas': pandas.__version__,
-                'numba': numba.__version__,
                 }
     maxwidth = max([len(k) for k in versions.keys()])
+
+    try:
+        import numba
+    except ImportError:
+        numba = None
+
+    if numba is not None:
+        versions["numba"] = numba.__version__
 
     for key, val in versions.items():
         print(f"{key: <{maxwidth}}  {val}")

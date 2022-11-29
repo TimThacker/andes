@@ -891,7 +891,7 @@ class Model:
         col = self.calls.jjac[j_name][idx]
 
         try:
-            row_name = eq_names[j_name[0]][row]  # where jname[0] is the equation name (f, g, r, t)
+            row_name = eq_names[j_name[0]][row]  # where jname[0] is the equation name in ("f", "g")
             col_name = var_names_list[col]
         except IndexError as e:
             logger.error("Generated code outdated. Run `andes prepare -i` to re-generate.")
@@ -1323,7 +1323,7 @@ class Model:
 
     def post_init_check(self):
         """
-        Post init checking. Warns if values of `InitChecker` is not True.
+        Post init checking. Warns if values of `InitChecker` are not True.
         """
         self.get_inputs(refresh=True)
 
@@ -1333,17 +1333,12 @@ class Model:
 
     def numba_jitify(self, parallel=False, cache=True, nopython=False):
         """
-        Convert equation residual calls, Jacobian calls,
-        and variable service calls into JIT compiled functions.
+        Convert equation residual calls, Jacobian calls, and variable service
+        calls into JIT compiled functions.
 
-        This function can be turned on by setting
-        ``System.config.numba`` to ``1``.
-
-        Warnings
-        --------
-        This feature is experimental and does not guarantee a speed up.
-        In fact, the program will likely end up being slower due to compilation.
+        This function can be enabled by setting ``System.config.numba = 1``.
         """
+
         if self.system.config.numba != 1:
             return
 

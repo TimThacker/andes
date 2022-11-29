@@ -6,10 +6,63 @@ Release notes
 
 The APIs before v3.0.0 are in beta and may change without prior notice.
 
+v1.8 Notes
+==========
+
+v1.8.3 (2022-11-15)
+-------------------
+- Support Python 3.11. The average performance gain is a few percent.
+- Made ``numba`` an optional dependency because it does not yet support Python
+  3.11.
+- Fixes a bug in the time stepping logic that causes resumed simulations to
+  overwrite the result of the previous final step.
+
+v1.8.2 (2022-10-30)
+-------------------
+This is a minor release to support SymPy 1.11.x.
+
+Internally, ``ModelData`` contains a new member field ``index_bases`` to record
+the variables by which other variables are indexed. Most variables, by default,
+are indexed by ``idx``. Some models (such as COI) whose device can link to
+multiple other devices can have multiple index bases.
+
+Index bases are currently placeholders and have not been used in the current
+version.
+
+v1.8.1 (2022-09-24)
+-------------------
+
+- New turbine governor model :ref:`HYGOV4`. Thanks to Zaid Mahmood for the
+  contribution.
+- Bug fixes to saving data to xlsx file.
+
+v1.8.0 (2022-08-30)
+-------------------
+
+- Internal change: drop the support for reloading generated code from
+  ``calls.pkl``. All generated code are serialized into Python files and
+  reloaded as a ``pycode`` module.
+- Fix an issue where cases in multiprocessing fail to serialize due to
+  not being able to find ``pycode``. ``pycode`` is now properly imported by the
+  main process.
+- When one needs to serialize a System object, such as during multiprocessing,
+  one needs to manually import ``pycode``. This can be done by calling
+  ``andes.system.import_pycode()``.
+- Internal change: serializing with ``dill`` is not set to recursive by default.
+
 v1.7 Notes
 ==========
 
-v1.7.7 (2022-08-xx)
+v1.7.8 (2022-08-24)
+-------------------
+
+- Support marking tests as extra so that they are not run by default. The
+  function names for extra tests should contain ``extra_test``. To run all
+  tests, use ``andes st -e`` or ``andes selftest --extra``.
+- Add the ``new_A`` flag for sparse solvers to trigger actions. Currently, only
+  the ``spsolve`` solver will need to rebuild and refactorize the sparse matrix.
+
+v1.7.7 (2022-08-02)
 -------------------
 - Implemented a chattering detection and stop algorithm by increasing the step
   size when chattering is detected.
