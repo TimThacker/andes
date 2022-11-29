@@ -26,7 +26,6 @@ command_aliases = {
 def create_parser():
     """
     Create a parser for the command-line interface.
-
     Returns
     -------
     argparse.ArgumentParser

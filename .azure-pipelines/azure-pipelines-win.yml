@@ -24,7 +24,6 @@ jobs:
       call activate andesEnv
       conda install --yes --quiet --name andesEnv python=%PYTHON_VERSION%
     displayName: Install Anaconda packages
-
   - script: |
       call activate andesEnv
       python -m pip install --upgrade pip
