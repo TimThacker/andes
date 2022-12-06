@@ -138,7 +138,7 @@ class PFlow(BaseRoutine):
         if not self.config.linsolve:
             self.A = array(self.A)
             self.res = array(self.res)
-            num_qubits = 3
+            num_qubits = 4
             #int(np.log2(self.res.ndim))
             self.res = self.res / np.linalg.norm(self.res)
             qc = QuantumCircuit(num_qubits)
