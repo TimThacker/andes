@@ -136,24 +136,21 @@ class PFlow(BaseRoutine):
    
 
         if not self.config.linsolve:
-            self.A_array = array(self.A)
-            self.res_array = array(self.res)
-            print(self.A)
-            print(self.A_array)
-            print(type(self.A_array))
-            #num_qubits = 7
+            self.A = array(self.A)
+            self.res = array(self.res)
+            num_qubits = 3
             #int(np.log2(self.res.ndim))
-           # self.res = self.res / np.linalg.norm(self.res)
-           # qc = QuantumCircuit(num_qubits)
-           # qc.isometry(self.res, list(range(num_qubits)), None)
-            #hhl = HHL()
-            #solution = hhl.solve(self.A, qc)
-            #total_qubits = solution.state.num_qubits
-            #approx_result = quantum_info.Statevector(solution.state).data[2 ** (total_qubits - 1) : 2 ** (total_qubits - 1) + 2 ** num_qubits]
-            #exact = np.dot(np.linalg.inv(self.A), self.res)
-            #self.inc = np.real(approx_result/np.linalg.norm(approx_result))
+            self.res = self.res / np.linalg.norm(self.res)
+            qc = QuantumCircuit(num_qubits)
+            qc.isometry(self.res, list(range(num_qubits)), None)
+            hhl = HHL()
+            solution = hhl.solve(self.A, qc)
+            total_qubits = solution.state.num_qubits
+            approx_result = quantum_info.Statevector(solution.state).data[2 ** (total_qubits - 1) : 2 ** (total_qubits - 1) + 2 ** num_qubits]
+            exact = np.dot(np.linalg.inv(self.A), self.res)
+            self.inc = np.real(approx_result/np.linalg.norm(approx_result))
             
-            self.inc = self.solver.solve(self.A, self.res)
+            #self.inc = self.solver.solve(self.A, self.res)
 
             
             #backend = Aer.get_backend('aer_simulator')
