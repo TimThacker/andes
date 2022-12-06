@@ -138,7 +138,8 @@ class PFlow(BaseRoutine):
         if not self.config.linsolve:
             self.A = array(self.A)
             self.res = array(self.res)
-            num_qubits = int(np.log2(self.res.ndim))
+            num_qubits = 7
+            #int(np.log2(self.res.ndim))
             self.res = self.res / np.linalg.norm(self.res)
             qc = QuantumCircuit(num_qubits)
             qc.isometry(self.res, list(range(num_qubits)), None)
