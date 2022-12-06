@@ -2,6 +2,7 @@
 Module for power flow calculation.
 """
 from qiskit import Aer
+from qiskit.algorithms.linear_solvers.hhl import HHL
 import logging
 from collections import OrderedDict
 
