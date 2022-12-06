@@ -5,6 +5,7 @@ Module for power flow calculation.
 from qiskit import QuantumCircuit
 from qiskit.algorithms.linear_solvers.hhl import HHL
 from qiskit import quantum_info
+from numpy import array
 
 import logging
 from collections import OrderedDict
