@@ -1,6 +1,11 @@
 """
 Module for power flow calculation.
 """
+
+from qiskit import QuantumCircuit
+from qiskit.algorithms.linear_solvers.hhl import HHL
+from qiskit import quantum_info
+
 import logging
 from collections import OrderedDict
 
@@ -130,7 +135,22 @@ class PFlow(BaseRoutine):
    
 
         if not self.config.linsolve:
-            self.inc = self.solver.solve(self.A, self.res)
+            self.A = array(self.A)
+            self.res = array(self.res)
+            num_qubits = int(np.log2(self.A.shape[0]))
+            self.res = self.res / np.linalg.norm(self.res)
+            qc = QuantumCircuit(num_qubits)
+            qc.isometry(self.res, list(range(num_qubits)), None)
+            hhl = HHL()
+            solution = hhl.solve(self.A, qc)
+            total_qubits = solution.state.num_qubits
+            approx_result = quantum_info.Statevector(solution.state).data[2 ** (total_qubits - 1) : 2 ** (total_qubits - 1) + 2 ** num_qubits]
+            exact = np.dot(np.linalg.inv(self.A), self.res)
+            self.inc = np.real(approx_result/np.linalg.norm(approx_result))
+            
+            #self.inc = self.solver.solve(self.A, self.res)
+
+            
             #backend = Aer.get_backend('aer_simulator')
             #hhl = HHL(1e-3, quantum_instance=backend)
             #self.inc = hhl.solve(self.A, self.res)
