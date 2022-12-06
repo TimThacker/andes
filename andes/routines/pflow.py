@@ -2,11 +2,6 @@
 Module for power flow calculation.
 """
 
-from qiskit import QuantumCircuit
-from qiskit.algorithms.linear_solvers.hhl import HHL
-from qiskit import quantum_info
-from numpy import array
-
 import logging
 from collections import OrderedDict
 
@@ -46,7 +41,7 @@ class PFlow(BaseRoutine):
                               )
         self.config.add_extra("_alt",
                               tol="float",
-                              method=("NR", "dishonest", "NK"),
+                              method=("NR", "dishonest", "NK", "Quantum"),
                               check_conn=(0, 1),
                               max_iter=">=10",
                               n_factorize=">0",
@@ -108,7 +103,7 @@ class PFlow(BaseRoutine):
 
     def nr_step(self):
         """
-        Solve a single iteration step using the Newton-Raphson method.
+        Solve a single iteration step using the Newton-Raphson.
 
         Returns
         -------
@@ -136,25 +131,9 @@ class PFlow(BaseRoutine):
    
 
         if not self.config.linsolve:
-            self.A = array(self.A)
-            self.res = array(self.res)
-            num_qubits = int(np.log2(self.A.shape[1]))
-            self.res = self.res / np.linalg.norm(self.res)
-            qc = QuantumCircuit(num_qubits)
-            qc.isometry(self.res, list(range(num_qubits)), None)
-            hhl = HHL()
-            solution = hhl.solve(self.A, qc)
-            total_qubits = solution.state.num_qubits
-            approx_result = quantum_info.Statevector(solution.state).data[2 ** (total_qubits - 1) : 2 ** (total_qubits - 1) + 2 ** num_qubits]
-            exact = np.dot(np.linalg.inv(self.A), self.res)
-            self.inc = np.real(approx_result/np.linalg.norm(approx_result))
             
-            #self.inc = self.solver.solve(self.A, self.res)
+            self.inc = self.solver.solve(self.A, self.res)
 
-            
-            #backend = Aer.get_backend('aer_simulator')
-            #hhl = HHL(1e-3, quantum_instance=backend)
-            #self.inc = hhl.solve(self.A, self.res)
         else:
             self.inc = self.solver.linsolve(self.A, self.res)
             #backend = Aer.get_backend('aer_simulator')
@@ -267,6 +246,8 @@ class PFlow(BaseRoutine):
             self.nr_solve()
         elif method == 'nk':
             self.newton_krylov()
+        elif methods == 'quantum':
+            self.quantum_NR()
 
         t1, s1 = elapsed(t0)
         self.exec_time = t1 - t0
@@ -302,6 +283,105 @@ class PFlow(BaseRoutine):
         if self.system.files.no_output is False:
             r = Report(self.system)
             r.write()
+            
+            
+    def QNR_step(self):
+        """
+        Solve a single iteration step using the Newton-Raphson.
+
+        Returns
+        -------
+        float
+            maximum absolute mismatch
+        """
+
+        system = self.system
+
+        # ---------- Build numerical DAE----------
+        self.fg_update()
+
+        # ---------- update the Jacobian on conditions ----------
+        if self.config.method != 'dishonest' or (self.niter < self.config.n_factorize):
+            system.j_update(self.models)
+            self.solver.worker.new_A = True
+
+        # ---------- prepare and solve linear equations ----------
+        self.res[:system.dae.n] = -system.dae.f[:]
+        self.res[system.dae.n:] = -system.dae.g[:]
+
+        self.A = sparse([[system.dae.fx, system.dae.gx],
+                         [system.dae.fy, system.dae.gy]])
+        
+   
+
+        if not self.config.linsolve:
+            
+            self.inc = self.solver.solve(self.A, self.res)
+
+        else:
+            self.inc = self.solver.linsolve(self.A, self.res)
+            #backend = Aer.get_backend('aer_simulator')
+            #hhl = HHL(1e-3, quantum_instance=backend)
+            #self.inc = hhl.solve(self.A, self.res)
+
+        system.dae.x += np.ravel(self.inc[:system.dae.n])
+        system.dae.y += np.ravel(self.inc[system.dae.n:])
+
+        # find out variables associated with maximum mismatches
+        fmax = 0
+        if system.dae.n > 0:
+            fmax_idx = np.argmax(np.abs(system.dae.f))
+            fmax = system.dae.f[fmax_idx]
+            logger.debug("Max. diff mismatch %.10g on %s", fmax, system.dae.x_name[fmax_idx])
+
+        gmax_idx = np.argmax(np.abs(system.dae.g))
+        gmax = system.dae.g[gmax_idx]
+        logger.debug("Max. algeb mismatch %.10g on %s", gmax, system.dae.y_name[gmax_idx])
+
+        mis = max(abs(fmax), abs(gmax))
+        system.vars_to_models()
+
+        return mis 
+    
+    def quantum_NR(self, verbose=True):
+        """
+        Experimental quantum NR method.
+        
+        Returns
+        -------
+        bool
+            Convergence status
+    
+        """
+        self.niter = 0
+        while True:
+            mis = self.QNR_step()
+            logger.info('%d: |F(x)| = %.10g', self.niter, mis)
+
+            # store the increment
+            if self.niter == 0:
+                self.mis[0] = mis
+            else:
+                self.mis.append(mis)
+
+            # check for convergence
+            if mis < self.config.tol:
+                self.converged = True
+                break
+
+            if self.niter > self.config.max_iter:
+                break
+
+            if np.isnan(mis).any():
+                logger.error('NaN found in solution. Convergence is not likely')
+                break
+
+            if mis > 1e4 * self.mis[0]:
+                logger.error('Mismatch increased too fast. Convergence is not likely.')
+                break
+
+            self.niter += 1
+        return self.converged
 
     def _set_xy(self, xy):
         """
@@ -344,7 +424,8 @@ class PFlow(BaseRoutine):
         system.g_update(self.models)
         system.l_update_eq(self.models, niter=0)
         system.fg_to_dae()
-
+    
+    
     def newton_krylov(self, verbose=True):
         """
         Full Newton-Krylov method from SciPy.
