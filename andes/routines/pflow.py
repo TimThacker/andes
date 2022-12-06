@@ -139,7 +139,8 @@ class PFlow(BaseRoutine):
             self.A_array = array(self.A)
             self.res_array = array(self.res)
             print(self.A)
-            print(self.res)
+            print(self.A_array)
+            print(type(self.A_array))
             #num_qubits = 7
             #int(np.log2(self.res.ndim))
            # self.res = self.res / np.linalg.norm(self.res)
