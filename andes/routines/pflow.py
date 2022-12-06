@@ -138,8 +138,8 @@ class PFlow(BaseRoutine):
         if not self.config.linsolve:
             self.A_array = array(self.A)
             self.res_array = array(self.res)
-            print(self.A_array)
-            print(self.res_array)
+            print(self.A_array.shape[0])
+            print(self.res_array.shape[0])
             #num_qubits = 7
             #int(np.log2(self.res.ndim))
            # self.res = self.res / np.linalg.norm(self.res)
