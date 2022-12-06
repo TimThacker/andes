@@ -246,7 +246,7 @@ class PFlow(BaseRoutine):
             self.nr_solve()
         elif method == 'nk':
             self.newton_krylov()
-        elif methods == 'quantum':
+        elif method == 'quantum':
             self.quantum_NR()
 
         t1, s1 = elapsed(t0)
