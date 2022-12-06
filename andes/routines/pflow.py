@@ -131,7 +131,10 @@ class PFlow(BaseRoutine):
    
 
         if not self.config.linsolve:
-            self.inc = self.solver.solve(self.A, self.res)
+            #self.inc = self.solver.solve(self.A, self.res)
+            backend = Aer.get_backend('aer_simulator')
+            hhl = HHL(1e-3, quantum_instance=backend)
+            self.inc = hhl.solve(self.A, self.res)
         else:
             #self.inc = self.solver.linsolve(self.A, self.res)
             backend = Aer.get_backend('aer_simulator')
