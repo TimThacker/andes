@@ -1,7 +1,7 @@
 """
 Module for power flow calculation.
 """
-
+from qiskit import Aer
 import logging
 from collections import OrderedDict
 
@@ -127,11 +127,16 @@ class PFlow(BaseRoutine):
 
         self.A = sparse([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
+        
+   
 
         if not self.config.linsolve:
             self.inc = self.solver.solve(self.A, self.res)
         else:
-            self.inc = self.solver.linsolve(self.A, self.res)
+            #self.inc = self.solver.linsolve(self.A, self.res)
+            backend = Aer.get_backend('aer_simulator')
+            hhl = HHL(1e-3, quantum_instance=backend)
+            self.inc = hhl.solve(self.A, self.res)
 
         system.dae.x += np.ravel(self.inc[:system.dae.n])
         system.dae.y += np.ravel(self.inc[system.dae.n:])
