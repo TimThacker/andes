@@ -1,6 +1,6 @@
 from andes.models.governor.gast import GAST  # NOQA
 from andes.models.governor.ieeeg1 import IEEEG1  # NOQA
-from andes.models.governor.ieeeg2m import IEEEG1M # HP Research
+from andes.models.governor.ieeeg1m import IEEEG1M # HP Research
 from andes.models.governor.ieesgo import IEESGO  # NOQA
 from andes.models.governor.ieesgor import IEESGOR # HP Research
 from andes.models.governor.ieesgorm import IEESGORM # HP Research
