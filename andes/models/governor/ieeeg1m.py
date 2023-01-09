@@ -309,5 +309,5 @@ class IEEEG1M(IEEEG1MData, IEEEG1MModel):
     """
 
     def __init__(self, system, config):
-        IEEEG1Data.__init__(self)
+        IEEEG1MData.__init__(self)
         IEEEG1Model.__init__(self, system, config)
