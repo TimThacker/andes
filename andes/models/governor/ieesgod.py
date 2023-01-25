@@ -6,13 +6,7 @@ from andes.models.governor.tgbase import TGBase, TGBaseData
 class IEESGODData(TGBaseData):
     def __init__(self):
         TGBaseData.__init__(self)
-        
-        self.wd = Algeb(info='Generator speed deviation',
-                        unit='p.u.',
-                        tex_name=r'\omega_{dev}',
-                        v_str='0',
-                        e_str='ue * (omega - wref) - wd',
-                        )
+
         self.dbL = NumParam(info='Lower bound of deadband',
                             tex_name='db_L',
                             default=0.0,
@@ -83,6 +77,13 @@ class IEESGODData(TGBaseData):
 class IEESGODModel(TGBase):
     def __init__(self, system, config):
         TGBase.__init__(self, system, config)
+                
+        self.wd = Algeb(info='Generator speed deviation',
+                        unit='p.u.',
+                        tex_name=r'\omega_{dev}',
+                        v_str='0',
+                        e_str='ue * (omega - wref) - wd',
+                        )
         
         self.DB = DeadBand1(u=self.wd,
                             center=0.0, lower=self.dbL,
