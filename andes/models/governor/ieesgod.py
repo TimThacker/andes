@@ -1,6 +1,7 @@
 from andes.core import Lag, LeadLag, NumParam
 from andes.core.block import GainLimiter
 from andes.models.governor.tgbase import TGBase, TGBaseData
+from andes.core.block import DeadBand1
 
 
 class IEESGODData(TGBaseData):
