@@ -3,7 +3,6 @@ from andes.core.block import GainLimiter, DeadBand1
 from andes.models.governor.tgbase import TGBase, TGBaseData
 
 
-
 class IEESGODData(TGBaseData):
     def __init__(self):
         TGBaseData.__init__(self)
