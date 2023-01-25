@@ -6,6 +6,16 @@ from andes.models.governor.tgbase import TGBase, TGBaseData
 class IEESGODData(TGBaseData):
     def __init__(self):
         TGBaseData.__init__(self)
+        self.dbL = NumParam(info='Lower bound of deadband',
+                            tex_name='db_L',
+                            default=0.0,
+                            unit='p.u.',
+                            )
+        self.dbU = NumParam(info='Upper bound of deadband',
+                            tex_name='db_U',
+                            default=0.0,
+                            unit='p.u.',
+                            )
         self.T1 = NumParam(info='Controller lag',
                            default=0.02,
                            tex_name='T_1',
@@ -66,8 +76,14 @@ class IEESGODData(TGBaseData):
 class IEESGODModel(TGBase):
     def __init__(self, system, config):
         TGBase.__init__(self, system, config)
+        
+        self.DB = DeadBand1(u='ue * omega - wref)',
+                            center=0.0, lower=self.dbL,
+                            upper=self.dbU, tex_name='DB',
+                            info='deadband for speed deviation',
+                            )
 
-        self.F1 = Lag(u='ue * (omega - wref)',
+        self.F1 = Lag(u=self.DB_y,
                       T=self.T1,
                       K=self.K1,
                       )
