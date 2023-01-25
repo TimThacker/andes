@@ -7,6 +7,13 @@ from andes.core.block import DeadBand1
 class IEESGODData(TGBaseData):
     def __init__(self):
         TGBaseData.__init__(self)
+        
+        self.wd = Algeb(info='Generator speed deviation',
+                        unit='p.u.',
+                        tex_name=r'\omega_{dev}',
+                        v_str='0',
+                        e_str='ue * (omega - wref) - wd',
+                        )
         self.dbL = NumParam(info='Lower bound of deadband',
                             tex_name='db_L',
                             default=0.0,
@@ -78,7 +85,7 @@ class IEESGODModel(TGBase):
     def __init__(self, system, config):
         TGBase.__init__(self, system, config)
         
-        self.DB = DeadBand1(u='ue * omega - wref)',
+        self.DB = DeadBand1(u=self.wd,
                             center=0.0, lower=self.dbL,
                             upper=self.dbU, tex_name='DB',
                             info='deadband for speed deviation',
