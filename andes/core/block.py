@@ -1973,6 +1973,6 @@ class DeadBand2(Block):
 
         """
 
-        self.y.e_str = f'{self.u.name} * (1 {self.name}_db_zi) +' \
+        self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
                        f'({self.center.name} * {self.name}_db_zi) - {self.name}_y'
 
