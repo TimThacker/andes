@@ -1,5 +1,5 @@
 from andes.core import Lag, LeadLag, NumParam, Algeb, State, ConstService
-from andes.core.block import GainLimiter, DeadBand1
+from andes.core.block import GainLimiter, DeadBand1, DeadBand2
 from andes.models.governor.tgbase import TGBase, TGBaseData
 
 
