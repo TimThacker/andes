@@ -85,7 +85,7 @@ class IEESGODModel(TGBase):
                         e_str='ue * (omega - wref) - wd',
                         )
         
-        self.DB = DeadBand3(u=self.wd,
+        self.DB = DeadBand2(u=self.wd,
                             center=0.0, lower=self.dbL,
                             upper=self.dbU
                             
