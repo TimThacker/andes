@@ -1238,7 +1238,9 @@ class DeadBandRT(DeadBand):
 
         # default state if not enabled
         self.zur = np.array([0.])
+        self.zur_t = np.array([0.])
         self.zlr = np.array([0.])
+        self.zlr_t = np.array([0.])
 
         self.export_flags.extend(['zur', 'zlr'])
         self.export_flags_tex.extend(['z_ur', 'z_lr'])
@@ -1275,12 +1277,17 @@ class DeadBandRT(DeadBand):
 
         if not self.enable:
             return
-
+        
+        if self.zl > 0:
+            self.zlr_t = 1
+        if self.zlr_t > 0 and self.zi > 0:
+            self.zlr[:] = 1.0
+            
+        
+        
         # square return dead band
-        self.zur[:] = np.equal(self.zu + self.zi, 2) 
-        #+ self.zur * np.equal(self.zi, self.zi)
-        self.zlr[:] = np.equal(self.zl + self.zi, 2) 
-        #+ self.zlr * np.equal(self.zi, self.zi)
+        self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
+        #self.zlr[:] = np.equal(self.zl + self.zi, 2) + self.zlr * np.equal(self.zi, self.zi)
 
 
 class Delay(Discrete):
