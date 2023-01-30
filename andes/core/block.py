@@ -2002,7 +2002,7 @@ class DeadBand3(Block):
     """
 
     def __init__(self, u, center, lower, upper, enable=True):
-        Block.__init__(self, name=name)
+        Block.__init__(self)
 
         self.u = dummify(u)
         self.center = dummify(center)
