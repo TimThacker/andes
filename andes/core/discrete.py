@@ -1277,8 +1277,10 @@ class DeadBandRT(DeadBand):
             return
 
         # square return dead band
-        self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
-        self.zlr[:] = np.equal(self.zl + self.zi, 2) + self.zlr * np.equal(self.zi, self.zi)
+        self.zur[:] = np.equal(self.zu + self.zi, 2) 
+        #+ self.zur * np.equal(self.zi, self.zi)
+        self.zlr[:] = np.equal(self.zl + self.zi, 2) 
+        #+ self.zlr * np.equal(self.zi, self.zi)
 
 
 class Delay(Discrete):
