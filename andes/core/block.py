@@ -1976,3 +1976,58 @@ class DeadBand2(Block):
         self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
                        f'({self.u.name} * {self.name}_db_zi) - {self.name}_y'
 
+class DeadBand3(Block):
+    """
+    Deadband type 1 (linear, non-step).
+
+    Parameters
+    ----------
+    center
+        Default value when within the deadband. If the input is an error signal,
+        center should be set to zero.
+    gain
+        Gain multiplied to DeadBand discrete block's output.
+
+    Notes
+    -----
+
+    Block diagram ::
+
+              |   /
+        ______|__/___   -> Gain -> DeadBand1_y
+           /  |
+          /   |
+
+    """
+
+    def __init__(self, u, center, lower, upper, gain=1.0, enable=True,
+                 name=None, tex_name=None, info=None, namespace='local'):
+        Block.__init__(self, name=name, tex_name=tex_name, info=info, namespace=namespace)
+
+        self.u = dummify(u)
+        self.center = dummify(center)
+        self.lower = dummify(lower)
+        self.upper = dummify(upper)
+        self.gain = dummify(gain)
+        self.enable = enable
+
+        self.db = DeadBandRT(u=u, center=center, lower=lower, upper=upper,
+                           enable=enable, tex_name='db')
+        self.y = Algeb(info='Deadband type 1 output', tex_name='y', discrete=self.db)
+        self.vars = {'db': self.db, 'y': self.y}
+
+    def define(self):
+        """
+        Notes
+        -----
+        Implemented equation:
+
+        .. math ::
+            
+            0 = u * (1 - db_zi) + dbl * db_zlr + dbu * db_zur - var_out
+
+        """
+        
+        self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
+                       f'{self.lower.name} * {self.name}_db_zlr +' \
+                       f'{self.upper.name} * {self.name}_db_zur - {self.name}_y'
