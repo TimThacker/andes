@@ -1285,16 +1285,16 @@ class DeadBandRT(DeadBand):
         I am attempting to implement some deadband logic considering these flags.
         """
         
-        if np.all(self.zl) > 0:
-            self.zlr_t = 1
-        if self.zlr_t > 0 and np.all(self.zi) > 0:
-            self.zlr[:] = 1.0
+        #if np.all(self.zl) > 0:
+            #self.zlr_t = 1
+        #if self.zlr_t > 0 and np.all(self.zi) > 0:
+            #self.zlr[:] = 1.0
             
         
         
         # square return dead band
-        #self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
-        #self.zlr[:] = np.equal(self.zl + self.zi, 2) + self.zlr * np.equal(self.zi, self.zi)
+        self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
+        self.zlr[:] = np.equal(self.zl + self.zi, 2) + self.zlr * np.equal(self.zi, self.zi)
 
 
 class Delay(Discrete):
