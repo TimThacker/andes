@@ -1278,6 +1278,13 @@ class DeadBandRT(DeadBand):
         if not self.enable:
             return
         
+        
+        """
+        THE FOLLOWING IS A BANDAID FIX!
+        Note: For some reason, I found that the logic for the zur/zlr flags was not working. This must be investigated. In the meantime,
+        I am attempting to implement some deadband logic considering these flags.
+        """
+        
         if np.all(self.zl) > 0:
             self.zlr_t = 1
         if self.zlr_t > 0 and np.all(self.zi) > 0:
@@ -1286,7 +1293,7 @@ class DeadBandRT(DeadBand):
         
         
         # square return dead band
-        self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
+        #self.zur[:] = np.equal(self.zu + self.zi, 2) + self.zur * np.equal(self.zi, self.zi)
         #self.zlr[:] = np.equal(self.zl + self.zi, 2) + self.zlr * np.equal(self.zi, self.zi)
 
 
