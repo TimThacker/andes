@@ -12,7 +12,7 @@ from collections import OrderedDict
 from typing import Iterable, List, Optional, Tuple, Union
 
 from andes.core.common import JacTriplet, ModelFlags, dummify
-from andes.core.discrete import (AntiWindup, AntiWindupRate, DeadBand,
+from andes.core.discrete import (AntiWindup, AntiWindupRate, DeadBand, DeadBandRT,
                                  HardLimiter, LessThan, RateLimiter,)
 from andes.core.service import EventFlag
 from andes.core.var import Algeb, State
