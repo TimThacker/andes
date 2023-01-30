@@ -87,9 +87,10 @@ class IEESGODModel(TGBase):
         
         self.DB = DeadBand3(u=self.wd,
                             center=0.0, lower=self.dbL,
-                            upper=self.dbU, tex_name='DB',
+                            upper=self.dbU, 
                             info='deadband for speed deviation',
                             )
+        #tex_name='DB',
 
         self.F1 = Lag(u=self.DB_y,
                       T=self.T1,
