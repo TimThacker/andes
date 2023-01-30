@@ -1278,9 +1278,9 @@ class DeadBandRT(DeadBand):
         if not self.enable:
             return
         
-        if self.zl > 0:
+        if np.all(self.zl) > 0:
             self.zlr_t = 1
-        if self.zlr_t > 0 and self.zi > 0:
+        if self.zlr_t > 0 and np.all(self.zi) > 0:
             self.zlr[:] = 1.0
             
         
