@@ -2008,7 +2008,6 @@ class DeadBand3(Block):
         self.center = dummify(center)
         self.lower = dummify(lower)
         self.upper = dummify(upper)
-        self.gain = dummify(gain)
         self.enable = enable
 
         self.db = DeadBandRT(u=u, center=center, lower=lower, upper=upper,
