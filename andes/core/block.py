@@ -16,7 +16,7 @@ from andes.core.discrete import (AntiWindup, AntiWindupRate, DeadBand, DeadBandR
                                  HardLimiter, LessThan, RateLimiter,)
 from andes.core.service import EventFlag
 from andes.core.var import Algeb, State
-
+import numpy as np
 
 class Block:
     r"""
