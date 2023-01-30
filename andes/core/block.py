@@ -1972,7 +1972,6 @@ class DeadBand2(Block):
             0 = u * (1 - db_zi) + (center * db_zi) - var_out
 
         """
-
         self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
                        f'({self.u.name} * {self.name}_db_zi) - {self.name}_y'
 
@@ -2026,7 +2025,9 @@ class DeadBand3(Block):
             0 = u * (1 - db_zi) + dbl * db_zlr + dbu * db_zur - var_out
 
         """
-        
-        self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
+        if np.any(self.db.zur) > 0:
+          self.y.e_str = f'{self.u.name}'
+        else:
+          self.y.e_str = f'{self.u.name} * (1 - {self.name}_db_zi) +' \
                        f'{self.lower.name} * {self.name}_db_zlr +' \
                        f'{self.upper.name} * {self.name}_db_zur - {self.name}_y'
