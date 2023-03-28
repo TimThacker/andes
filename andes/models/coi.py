@@ -136,13 +136,13 @@ class COIModel(Model):
                            diag_eps=True,
                            )
         
-        self.Tr = NumParam(default=0.1,
+        self.wts = NumParam(default=0.1,
                            info="frequency washout time constant",
                            tex_name='T_r')
 
-        self.Wf = Washout(u=self.omega,
+        self.rocof = Washout(u=self.omega,
                           K=1,
-                          T=self.Tr,
+                          T=self.wts,
                           info='frequency washout yielding ROCOF',
                           )
 
