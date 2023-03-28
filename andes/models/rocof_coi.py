@@ -3,7 +3,7 @@ COI rate-of-change of frequency measurement based on COI.
 """
 
 from andes.core import NumParam, Washout
-from andes.models.measurement import COI
+from andes.models import COI
 
 
 class ROCOFcoi(COI):
