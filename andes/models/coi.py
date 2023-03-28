@@ -8,6 +8,7 @@ from andes.core.param import ExtParam
 from andes.core.service import (BackRef, ConstService, ExtService, IdxRepeat,
                                 NumReduce, NumRepeat, RefFlatten,)
 from andes.core.var import Algeb, ExtAlgeb, ExtState
+from andes.core import NumParam, Washout
 
 
 class COIData(ModelData):
