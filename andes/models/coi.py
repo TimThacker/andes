@@ -134,6 +134,16 @@ class COIModel(Model):
                            e_str='-delta',
                            diag_eps=True,
                            )
+        
+        self.Tr = NumParam(default=0.1,
+                           info="frequency washout time constant",
+                           tex_name='T_r')
+
+        self.Wf = Washout(u=self.omega,
+                          K=1,
+                          T=self.Tr,
+                          info='frequency washout yielding ROCOF',
+                          )
 
         # Note:
         # `omega_sub` or `delta_sub` must not provide `v_str`.
