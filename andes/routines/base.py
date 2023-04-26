@@ -23,10 +23,12 @@ class BaseRoutine:
 
         self.config.add(OrderedDict((('sparselib', 'klu'),
                                      ('linsolve', 0),
+                                     ('quantum_solve', 0),
                                      )))
         self.config.add_extra("_help",
                               sparselib="linear sparse solver name",
                               linsolve="solve symbolic factorization each step (enable when KLU segfaults)",
+                              quantum_solve="HHL algorithm",
                               )
         self.config.add_extra("_alt",
                               sparselib=("klu", "umfpack", "spsolve", "cupy"),
