@@ -11,6 +11,7 @@ from andes.variables.report import Report
 from andes.shared import np, matrix, sparse, newton_krylov
 from scipy import linalg
 import numpy as np
+import scipy
 from numpy.linalg import norm
 from scipy.sparse.linalg import splu
 from qiskit import QuantumCircuit
