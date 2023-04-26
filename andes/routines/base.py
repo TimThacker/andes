@@ -33,6 +33,7 @@ class BaseRoutine:
         self.config.add_extra("_alt",
                               sparselib=("klu", "umfpack", "spsolve", "cupy"),
                               linsolve=(0, 1),
+                              quantum_solve=(0,1),
                               )
 
         self.solver = Solver(sparselib=self.config.sparselib)
