@@ -4,7 +4,7 @@ from andes.linsolvers.suitesparse import UMFPACKSolver, KLUSolver
 from numpy import angle, conj, exp, r_, Inf
 from numpy.linalg import norm
 from scipy.sparse.linalg import splu
-from scipy.linalg import ishermitian
+from scipy import linalg
 from qiskit import QuantumCircuit
 from qiskit.algorithms.linear_solvers.hhl import HHL
 from qiskit import quantum_info
