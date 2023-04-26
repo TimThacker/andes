@@ -228,7 +228,8 @@ class PFlow(BaseRoutine):
         print(np.shape(self.A))
         isHermitian = scipy.linalg.ishermitian(self.A)
         if isHermitian is False:
-            self.A = self.A.getH()
+            A = np.matrix(self.A)
+            self.A = A.getH()
 
         num_qubits = int(np.log2(self.A.shape[0]))
         self.res_norm = self.res / np.linalg.norm(self.res)
