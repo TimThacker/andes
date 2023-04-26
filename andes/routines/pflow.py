@@ -41,7 +41,7 @@ class PFlow(BaseRoutine):
                               )
         self.config.add_extra("_alt",
                               tol="float",
-                              method=("NR", "dishonest", "NK"),
+                              method=("NR", "dishonest", "NK", "QNR"),
                               check_conn=(0, 1),
                               max_iter=">=10",
                               n_factorize=">0",
@@ -238,6 +238,8 @@ class PFlow(BaseRoutine):
             self.nr_solve()
         elif method == 'nk':
             self.newton_krylov()
+        elif method == 'qnr':
+            self.qnr_solve()
 
         t1, s1 = elapsed(t0)
         self.exec_time = t1 - t0
