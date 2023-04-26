@@ -225,7 +225,7 @@ class PFlow(BaseRoutine):
         self.A = sparse([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
         
-        isHermitian = scipy.linalg.ishermitian(A)
+        isHermitian = scipy.linalg.ishermitian(self.A)
         if isHermitian is False:
             self.A = self.A.getH()
 
