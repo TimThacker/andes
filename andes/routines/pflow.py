@@ -247,7 +247,7 @@ class PFlow(BaseRoutine):
         elif method == 'nk':
             self.newton_krylov()
         elif method == 'quantum':
-            self.quantum_NR()
+            self.quantum_FDLF()
 
         t1, s1 = elapsed(t0)
         self.exec_time = t1 - t0
@@ -341,9 +341,9 @@ class PFlow(BaseRoutine):
 
         return mis 
     
-    def quantum_NR(self, verbose=True):
+    def quantum_FDLF(self, verbose=True):
         """
-        Experimental quantum NR method.
+        Experimental quantum Fast Decoupled Load Flow method.
         
         Returns
         -------
