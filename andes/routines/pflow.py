@@ -230,7 +230,7 @@ class PFlow(BaseRoutine):
         if isHermitian is False:
             A = np.matrix(self.A)
             self.A = A.getH()
-
+            print(np.shape(self.A))
         num_qubits = int(np.log2(self.A.shape[0]))
         self.res_norm = self.res / np.linalg.norm(self.res)
         qc = QuantumCircuit(num_qubits)
