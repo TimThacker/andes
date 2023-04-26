@@ -127,12 +127,11 @@ class PFlow(BaseRoutine):
         self.A = sparse([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
 
-        if self.config.quantum_solve:
-            self.inc = self.solver.quantum_solve(self.A, self.res)
-        if self.config.linsolve:
-            self.inc = self.solver.linsolve(self.A, self.res)
-        if not self.config.linsolve and not self.config.quantum_solve:
+
+        if not self.config.linsolve:
             self.inc = self.solver.solve(self.A, self.res)
+        else:
+            self.inc = self.solver.linsolve(self.A, self.res)
 
         system.dae.x += np.ravel(self.inc[:system.dae.n])
         system.dae.y += np.ravel(self.inc[system.dae.n:])
