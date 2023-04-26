@@ -225,7 +225,7 @@ class PFlow(BaseRoutine):
         self.A = matrix([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
         self.A = np.array(self.A)
-        print(np.shape(self.A)
+        print(np.shape(self.A))
         isHermitian = scipy.linalg.ishermitian(self.A)
         if isHermitian is False:
             self.A = self.A.getH()
