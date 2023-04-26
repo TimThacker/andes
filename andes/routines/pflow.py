@@ -222,7 +222,7 @@ class PFlow(BaseRoutine):
         self.res[:system.dae.n] = -system.dae.f[:]
         self.res[system.dae.n:] = -system.dae.g[:]
 
-        self.A = sparse([[system.dae.fx, system.dae.gx],
+        self.A = matrix([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
         print(len(self.A))
         print(len(self.A[0]))
