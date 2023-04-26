@@ -41,7 +41,7 @@ class PFlow(BaseRoutine):
                               )
         self.config.add_extra("_alt",
                               tol="float",
-                              method=("NR", "dishonest", "NK", "Quantum"),
+                              method=("NR", "dishonest", "NK"),
                               check_conn=(0, 1),
                               max_iter=">=10",
                               n_factorize=">0",
@@ -103,8 +103,7 @@ class PFlow(BaseRoutine):
 
     def nr_step(self):
         """
-        Solve a single iteration step using the Newton-Raphson.
-
+        Solve a single iteration step using the Newton-Raphson method.
         Returns
         -------
         float
@@ -127,18 +126,11 @@ class PFlow(BaseRoutine):
 
         self.A = sparse([[system.dae.fx, system.dae.gx],
                          [system.dae.fy, system.dae.gy]])
-        
-   
 
         if not self.config.linsolve:
-            
             self.inc = self.solver.solve(self.A, self.res)
-
         else:
             self.inc = self.solver.linsolve(self.A, self.res)
-            #backend = Aer.get_backend('aer_simulator')
-            #hhl = HHL(1e-3, quantum_instance=backend)
-            #self.inc = hhl.solve(self.A, self.res)
 
         system.dae.x += np.ravel(self.inc[:system.dae.n])
         system.dae.y += np.ravel(self.inc[system.dae.n:])
@@ -218,7 +210,6 @@ class PFlow(BaseRoutine):
     def run(self, **kwargs):
         """
         Solve the power flow using the selected method.
-
         Returns
         -------
         bool
@@ -246,8 +237,6 @@ class PFlow(BaseRoutine):
             self.nr_solve()
         elif method == 'nk':
             self.newton_krylov()
-        elif method == 'quantum':
-            self.quantum_FDLF()
 
         t1, s1 = elapsed(t0)
         self.exec_time = t1 - t0
@@ -279,107 +268,18 @@ class PFlow(BaseRoutine):
     def report(self):
         """
         Write power flow report to a plain-text file.
-        """
-        if self.system.files.no_output is False:
-            r = Report(self.system)
-            r.write()
-            
-            
-    def QNR_step(self):
-        """
-        Solve a single iteration step using the Newton-Raphson.
-
-        Returns
-        -------
-        float
-            maximum absolute mismatch
-        """
-
-        system = self.system
-
-        # ---------- Build numerical DAE----------
-        self.fg_update()
-
-        # ---------- update the Jacobian on conditions ----------
-        if self.config.method != 'dishonest' or (self.niter < self.config.n_factorize):
-            system.j_update(self.models)
-            self.solver.worker.new_A = True
-
-        # ---------- prepare and solve linear equations ----------
-        self.res[:system.dae.n] = -system.dae.f[:]
-        self.res[system.dae.n:] = -system.dae.g[:]
-
-        self.A = sparse([[system.dae.fx, system.dae.gx],
-                         [system.dae.fy, system.dae.gy]])
-        
-   
-
-        if not self.config.linsolve:
-            print(self.A)
-            print(self.res)
-            self.inc = self.solver.solve(self.A, self.res)
-
-        else:
-            self.inc = self.solver.linsolve(self.A, self.res)
-
-        system.dae.x += np.ravel(self.inc[:system.dae.n])
-        system.dae.y += np.ravel(self.inc[system.dae.n:])
-
-        # find out variables associated with maximum mismatches
-        fmax = 0
-        if system.dae.n > 0:
-            fmax_idx = np.argmax(np.abs(system.dae.f))
-            fmax = system.dae.f[fmax_idx]
-            logger.debug("Max. diff mismatch %.10g on %s", fmax, system.dae.x_name[fmax_idx])
-
-        gmax_idx = np.argmax(np.abs(system.dae.g))
-        gmax = system.dae.g[gmax_idx]
-        logger.debug("Max. algeb mismatch %.10g on %s", gmax, system.dae.y_name[gmax_idx])
-
-        mis = max(abs(fmax), abs(gmax))
-        system.vars_to_models()
-
-        return mis 
-    
-    def quantum_FDLF(self, verbose=True):
-        """
-        Experimental quantum Fast Decoupled Load Flow method.
-        
         Returns
         -------
         bool
-            Convergence status
-    
+            True if report was written, False otherwise.
         """
-        self.niter = 0
-        while True:
-            mis = self.QNR_step()
-            logger.info('%d: |F(x)| = %.10g', self.niter, mis)
 
-            # store the increment
-            if self.niter == 0:
-                self.mis[0] = mis
-            else:
-                self.mis.append(mis)
+        if self.system.files.no_output is False:
+            r = Report(self.system)
+            r.write()
+            return True
 
-            # check for convergence
-            if mis < self.config.tol:
-                self.converged = True
-                break
-
-            if self.niter > self.config.max_iter:
-                break
-
-            if np.isnan(mis).any():
-                logger.error('NaN found in solution. Convergence is not likely')
-                break
-
-            if mis > 1e4 * self.mis[0]:
-                logger.error('Mismatch increased too fast. Convergence is not likely.')
-                break
-
-            self.niter += 1
-        return self.converged
+        return False
 
     def _set_xy(self, xy):
         """
@@ -394,14 +294,11 @@ class PFlow(BaseRoutine):
     def _fg_wrapper(self, xy):
         """
         Wrapper for algebraic equations to be used with Newton-Krylov general solver
-
         Parameters
         ----------
         xy
-
         Returns
         -------
-
         """
         self._set_xy(xy)
         self.fg_update()
@@ -422,21 +319,17 @@ class PFlow(BaseRoutine):
         system.g_update(self.models)
         system.l_update_eq(self.models, niter=0)
         system.fg_to_dae()
-    
-    
+
     def newton_krylov(self, verbose=True):
         """
         Full Newton-Krylov method from SciPy.
-
         Warnings
         --------
         The result might be wrong if discrete are in use!
-
         Parameters
         ----------
         verbose
             True if verbose.
-
         Returns
         -------
         bool
