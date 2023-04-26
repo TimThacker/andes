@@ -9,6 +9,15 @@ from andes.utils.misc import elapsed
 from andes.routines.base import BaseRoutine
 from andes.variables.report import Report
 from andes.shared import np, matrix, sparse, newton_krylov
+from scipy import linalg
+import numpy as np
+from numpy.linalg import norm
+from scipy.sparse.linalg import splu
+from qiskit import QuantumCircuit
+from qiskit.algorithms.linear_solvers.hhl import HHL
+from qiskit import quantum_info
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +169,108 @@ class PFlow(BaseRoutine):
         self.niter = 0
         while True:
             mis = self.nr_step()
+            logger.info('%d: |F(x)| = %.10g', self.niter, mis)
+
+            # store the increment
+            if self.niter == 0:
+                self.mis[0] = mis
+            else:
+                self.mis.append(mis)
+
+            # check for convergence
+            if mis < self.config.tol:
+                self.converged = True
+                break
+
+            if self.niter > self.config.max_iter:
+                break
+
+            if np.isnan(mis).any():
+                logger.error('NaN found in solution. Convergence is not likely')
+                break
+
+            if mis > 1e4 * self.mis[0]:
+                logger.error('Mismatch increased too fast. Convergence is not likely.')
+                break
+
+            self.niter += 1
+
+        return self.converged
+  
+    
+    def qnr_step(self):
+        """
+        Solve a single iteration step using the experimental Quantum Newton-Raphson method.
+        Returns
+        -------
+        float
+            maximum absolute mismatch
+        """
+
+        system = self.system
+
+        # ---------- Build numerical DAE----------
+        self.fg_update()
+
+        # ---------- update the Jacobian on conditions ----------
+        if self.config.method != 'dishonest' or (self.niter < self.config.n_factorize):
+            system.j_update(self.models)
+            self.solver.worker.new_A = True
+
+        # ---------- prepare and solve linear equations ----------
+        self.res[:system.dae.n] = -system.dae.f[:]
+        self.res[system.dae.n:] = -system.dae.g[:]
+
+        self.A = sparse([[system.dae.fx, system.dae.gx],
+                         [system.dae.fy, system.dae.gy]])
+        
+        isHermitian = scipy.linalg.ishermitian(A)
+        if isHermitian is False:
+            self.A = self.A.getH()
+
+        num_qubits = int(np.log2(self.A.shape[0]))
+        self.res_norm = self.res / np.linalg.norm(self.res)
+        qc = QuantumCircuit(num_qubits)
+        qc.isometry(self.res_norm, list(range(num_qubits)), None)
+        hhl = HHL()
+        solution = hhl.solve(self.A, self.res_norm)
+        total_qubits = solution.state.num_qubits
+        approx_result = quantum_info.Statevector(solution.state).data[2 ** (total_qubits - 1) : 2 ** (total_qubits - 1) + 2 ** num_qubits]
+        self.inc = abs(approx_result)*np.lingalg.norm(self.res) # Multiple the approximate result by the norm
+
+
+        if not self.config.linsolve:
+            self.inc = self.solver.solve(self.A, self.res)
+        else:
+            self.inc = self.solver.linsolve(self.A, self.res)
+
+        system.dae.x += np.ravel(self.inc[:system.dae.n])
+        system.dae.y += np.ravel(self.inc[system.dae.n:])
+
+        # find out variables associated with maximum mismatches
+        fmax = 0
+        if system.dae.n > 0:
+            fmax_idx = np.argmax(np.abs(system.dae.f))
+            fmax = system.dae.f[fmax_idx]
+            logger.debug("Max. diff mismatch %.10g on %s", fmax, system.dae.x_name[fmax_idx])
+
+        gmax_idx = np.argmax(np.abs(system.dae.g))
+        gmax = system.dae.g[gmax_idx]
+        logger.debug("Max. algeb mismatch %.10g on %s", gmax, system.dae.y_name[gmax_idx])
+
+        mis = max(abs(fmax), abs(gmax))
+        system.vars_to_models()
+
+        return mis
+
+    def qnr_solve(self):
+        """
+        Solve the power flow problem using itertive experimental Quantum Newton's method.
+        """
+
+        self.niter = 0
+        while True:
+            mis = self.qnr_step()
             logger.info('%d: |F(x)| = %.10g', self.niter, mis)
 
             # store the increment
